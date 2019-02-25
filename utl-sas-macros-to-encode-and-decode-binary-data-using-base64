@@ -355,6 +355,72 @@ C2D906893FF204B03AB38EF3E9836FF59704D59D771F1259F77EFF4327A5BC6247E3BDF7FE1A42EE
                                                                                                               
 ;                                                                                                             
                                                                                                               
-%utl_decodeBase64(inp=d:/txt/class_encode.txt,out=d:/xls/class_decode.xlsx);                                  
+%utl_decodeBase64(inp=d:/txt/class_encode.txt,out=d:/xls/class_decode.xlsx);   
+
+
+*                                                                                                               
+ _ __ ___   __ _  ___ _ __ ___  ___                                                                             
+| '_ ` _ \ / _` |/ __| '__/ _ \/ __|                                                                            
+| | | | | | (_| | (__| | | (_) \__ \                                                                            
+|_| |_| |_|\__,_|\___|_|  \___/|___/                                                                            
+                                                                                                                
+;                                                                                                               
+                                                                                                                
+%macro utl_encodeBase64(inp=,out=);                                                                             
+                                                                                                                
+   /* Chang Chung */                                                                                            
+   %put %sysfunc(ifc(%sysevalf(%superq(inp)=,boolean),**** Please Provide the input file       ****,));         
+   %put %sysfunc(ifc(%sysevalf(%superq(out)=,boolean),**** Please Provide an output file       ****,));         
+                                                                                                                
+    %let res= %eval                                                                                             
+    (                                                                                                           
+        %sysfunc(ifc(%sysevalf(%superq(inp)=,boolean),1,0))                                                     
+      + %sysfunc(ifc(%sysevalf(%superq(out)=,boolean),1,0))                                                     
+    );                                                                                                          
+                                                                                                                
+     %if &res = 0 %then %do;                                                                                    
+                                                                                                                
+         %utl_submit_py64("                                                                                     
+         import base64;                                                                                         
+         data = open('&inp', 'rb').read();                                                                      
+         encoded = base64.b64encode(data);                                                                      
+         with open('&out', 'wb') as f:;                                                                         
+         .    f.write(encoded);                                                                                 
+         ");                                                                                                    
+                                                                                                                
+     %end;                                                                                                      
+                                                                                                                
+%mend utl_encodeBase64;                                                                                         
+                                                                                                                
+                                                                                                                
+%macro utl_decodeBase64(inp=,out=);                                                                             
+                                                                                                                
+   /* Chang Chung */                                                                                            
+   %put %sysfunc(ifc(%sysevalf(%superq(inp)=,boolean),**** Please Provide the input file       ****,));         
+   %put %sysfunc(ifc(%sysevalf(%superq(out)=,boolean),**** Please Provide an output file       ****,));         
+                                                                                                                
+    %let res= %eval                                                                                             
+    (                                                                                                           
+        %sysfunc(ifc(%sysevalf(%superq(inp)=,boolean),1,0))                                                     
+      + %sysfunc(ifc(%sysevalf(%superq(out)=,boolean),1,0))                                                     
+    );                                                                                                          
+                                                                                                                
+     %if &res = 0 %then %do;                                                                                    
+                                                                                                                
+         %utl_submit_py64("                                                                                     
+         import base64;                                                                                         
+         with open('&inp', 'rb') as g:;                                                                         
+         .    b64encode_from_file=g.read();                                                                     
+         decoded=base64.b64decode(b64encode_from_file);                                                         
+         with open('&out', 'wb') as w:;                                                                         
+         .    w.write(decoded);                                                                                 
+         ");                                                                                                    
+                                                                                                                
+     %end;                                                                                                      
+                                                                                                                
+%mend utl_decodeBase64;                                                                                         
+                                                                                                                
+                                                                                                                
+
                                                                                                               
                                                                                                               
